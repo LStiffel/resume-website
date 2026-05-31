@@ -23,16 +23,10 @@
     </form>
 
 <script>
-    const existing = localStorage.getItem("token");
-    if (existing) {
-        window.location.href = "/profile";
-    }
-
     async function submitForm() {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
-        // /token expects form data, not JSON
         const formData = new URLSearchParams();
         formData.append("username", email);
         formData.append("password", password);
@@ -45,13 +39,25 @@
 
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem("token", data.access_token); // store token
+            localStorage.setItem("token", data.access_token);
             window.location.href = "/profile";
         } else {
             document.getElementById("feedback").innerText = "Incorrect email or password.";
         }
     }
 
-
-    </script>
+    (async () => {
+        const existing = localStorage.getItem("token");
+        if (existing) {
+            const check = await fetch("/me", {
+                headers: { "Authorization": `Bearer ${existing}` }
+            });
+            if (check.ok) {
+                window.location.href = "/profile";
+            } else {
+                localStorage.removeItem("token");
+            }
+        }
+    })();
+</script>
 {% endblock %}
