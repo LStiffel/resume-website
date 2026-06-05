@@ -1,3 +1,5 @@
+import os
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
@@ -8,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import UserORM
 
-SECRET_KEY = "change_this_to_a_long_random_string"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = "HS256"
 TOKEN_EXPIRE_MINUTES = 60
 
